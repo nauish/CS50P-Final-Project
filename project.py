@@ -23,8 +23,10 @@ class Question:
                 print("Please enter a valid answer.")
 
     def list_question(self, question_list):
-        for i, question in enumerate(question_list):
-            print(f"{i + 1}. {question}")
+        i = 1
+        for question in question_list:
+            print(f"{i}. {question}")
+            i += 1
         while True:
             try:
                 answer = int(input(self.question)) - 1
@@ -173,8 +175,10 @@ def food_reader():
     foods = []
     with open("food_list.csv", "r") as file:
         reader = csv.DictReader(file)
-        for i, row in enumerate(reader, start=1):
+        i = 1
+        for row in reader:
             foods.append({"number": i,"name": row["name"], "cuisine_style": row["cuisine_style"], "high_cal": row["high_cal"], "cost": row["cost"],"vegetarian": row["vegetarian"], "note": row["note"], "favorite": row["favorite"], "disliked": row["disliked"]})
+            i += 1
     return foods
 
 #reads from designated list and filtered by specific category and print out food list
@@ -206,14 +210,18 @@ def food_filter_printer(food, cuisine_style=None, high_cal=None, cost=None, vege
                 filtered_food.append(item)
     if filtered_food:
         print("Food that match the criteria:")
-        for i, item in enumerate(filtered_food):
-            print(i+1, item["name"])
+        i = 1
+        for item in filtered_food:
+            print(i, item["name"])
+            i += 1
         food = filtered_food
         return food
     else:
         print("All food in the list:")
-        for i, item in enumerate(food):
-            print(i+1, item["name"])
+        i = 1
+        for item in filtered_food:
+            print(i, item["name"])
+            i += 1
         return food     
 
 #delete a food entry from food_list.csv
