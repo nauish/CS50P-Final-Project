@@ -4,10 +4,19 @@ class Question:
     def __init__(self, question):
         self.question = question
 
-    def yes_no_question(self):
+    def yes_no_maybe(self):
         while True:
             answer = input(self.question)
             acceptable_answer = ["y", "n", "m"]
+            if answer in acceptable_answer:
+                return answer
+            else:
+                print("Please enter a valid answer.")
+
+    def yes_no_question(self):
+        while True:
+            answer = input(self.question)
+            acceptable_answer = ["y", "n"]
             if answer in acceptable_answer:
                 return answer
             else:
@@ -44,13 +53,12 @@ cuisine_style_list = [
 
 #main() prints out the menu and forwards user input to other functions.
 def main():
-    welcome_msg = "##################################\nWelcome to the meal planner v0.1!\n##################################"
+    welcome_msg = "##################################\nWelcome to What should I Eat? v0.1!\n##################################"
     options = [
         "Just tell me what to eat! (Randomly choose 1 from the list)",
         "Help me decide by comparing between food (Championship style)",
-        "Set what type of food you feel like eating",
-        "Set cuisine restriction",
-        "Show food list",
+        "Randomly Choose 1 from the type of food you feel like eating",
+        "Show all food from the list",
         "Add new food to the list",
         "Delete food from the list",
         "Set food in the list as favorite",
@@ -65,42 +73,28 @@ def main():
             random_food()
         elif option == options[1]:
             food_championship()
-            break
         elif option == options[2]:
-            filter_list = [
-            "Cuisine style",
-            "High Calorie or not",
-            "Expensive or cheap",
-            "Vegetarian or not",
-            ]
-            filter=Question("What type of filter? ").list_question(filter_list)
-            print(filter)
-            if filter == filter_list[0]:
-                cuisine=Question("What type of cuisine? ").list_question(cuisine_style_list)
-                food_reader(cuisine)
-            elif filter == filter_list[1]:
-                high_cal=Question("Do you want to eat high calorie food? [y]Yes/[n]No ").yes_no_question()
-                print(high_cal)
-                food_reader(high_cal)
+            food_filter_menu()
         elif option == options[3]:
-            ...
-        elif option == options[4]:
             food_reader()
-        elif option == options[5]:
+        elif option == options[4]:
             food_writer()
-        elif option == options[6]:
+        elif option == options[5]:
             food_eraser()
-        elif option == options[7]:
+        elif option == options[6]:
             set_favorite_food()
-        elif option == options[8]:
+        elif option == options[7]:
             set_disliked_food()
-        elif option == "0":
+        elif option == options[8]:
             sys.exit("Have a nice day!")
         else:
             print("Invalid input. Please press the number of the option you want to use.")
-def random_food():
-    random_food = random.choice(food_reader())
-    print(f"You should eat {random_food['name']}!")
+
+def random_food(cuisine_style=None, high_cal=None, cost=None, vegetarian=None, favorite=None, disliked=None):
+    food = food_filter_printer(food_reader(), cuisine_style=cuisine_style, high_cal=high_cal, cost=cost, vegetarian=vegetarian, favorite=favorite, disliked=disliked)
+    random_food_choice= random.choice(food)
+    print(f"How about consider eating {str.lower(random_food_choice['name'])}?!")
+    return random_food_choice
 
 def food_championship():
     food = food_reader()
@@ -126,18 +120,47 @@ def food_championship():
         #Add winner back to the back of the list
         food.append(round_winner)
     winner = food[0]
-    print(f"The winner is: {winner['name']}.")
+    print(f"The winner is: {str.lower(winner['name'])}.")
     return winner
 
+def food_filter_menu():
+        filter_list = [
+        "Cuisine style",
+        "High Calorie or not",
+        "Expensive or cheap",
+        "Vegetarian or not",
+        "Favorite food",
+        "Disliked food"
+        ]
+        filter=Question("What type of filter? ").list_question(filter_list)
+        print(filter)
+        if filter == filter_list[0]:
+            cuisine = Question("What type of cuisine? ").list_question(cuisine_style_list)
+            random_food(cuisine)
+        elif filter == filter_list[1]:
+            high = Question("Do you want to eat high calorie food? [y]yes/[n]no ").yes_no_question()
+            random_food("",high)
+        elif filter == filter_list[2]:
+            cost = Question("Do you want to eat expensive food? [y]yes/[n]no ").yes_no_question()
+            random_food("","",cost)
+        elif filter == filter_list[3]:
+            vegetarian = Question("Do you want to eat vegetarian food? [y]yes/[n]no ").yes_no_question()
+            random_food("","","",vegetarian)
+        elif filter == filter_list[4]:
+            random_food("","","","","y")
+        elif filter == filter_list[5]:
+            random_food("","","","","","y")
+
+#write user inputs to food_list.csv 
 def food_writer():
     name = input("What's the name of the food? ")
     while not name:
         print("Please enter a food name.")
         name = input("What's the name of the food? ")
     cuisine_style = Question("What is the food's cuisine style? ").list_question(cuisine_style_list)
-    high_cal = Question("Is this food high calorie? ([y]yes/[n]no/[m]maybe) " ).yes_no_question()
-    cost = Question("Is it expensive? ([y]yes/[n]no/[m]maybe) ").yes_no_question()
-    vegetarian = Question("Is the food vegetarian? ([y]yes/[n]no/[m]maybe) ").yes_no_question()
+    high_cal = Question("Is this food high calorie? ([y]yes/[n]no/[m]maybe) " ).yes_no_maybe()
+    cost = Question("Is it expensive? ([y]yes/[n]no/[m]maybe) ").yes_no_maybe()
+    vegetarian = Question("Is the food vegetarian? ([y]yes/[n]no/[m]maybe) ").yes_no_maybe()
     note = input("Additional note? ")
     favorite = "n"
     disliked = "n"
@@ -145,40 +168,57 @@ def food_writer():
         writer = csv.DictWriter(file, fieldnames=["name", "cuisine_style", "high_cal", "cost", "vegetarian", "note", "favorite", "disliked"],)
         writer.writerow({"name": name, "cuisine_style": cuisine_style, "high_cal": high_cal, "cost": cost, "vegetarian": vegetarian, "note": note, "favorite": favorite, "disliked": disliked})
 
-def food_reader(cuisine_style=None, high_cal=None, cost=None, vegetarian=None):
-    food = []
+#reads from food_list.csv and puts in in memory
+def food_reader():
+    foods = []
     with open("food_list.csv", "r") as file:
         reader = csv.DictReader(file)
         for i, row in enumerate(reader, start=1):
-            food.append({"number": i,"name": row["name"], "cuisine_style": row["cuisine_style"], "high_cal": row["high_cal"], "cost": row["cost"],"vegetarian": row["vegetarian"], "note": row["note"]})
+            foods.append({"number": i,"name": row["name"], "cuisine_style": row["cuisine_style"], "high_cal": row["high_cal"], "cost": row["cost"],"vegetarian": row["vegetarian"], "note": row["note"], "favorite": row["favorite"], "disliked": row["disliked"]})
+    return foods
+
+#reads from designated list and filtered by specific category and print out food list
+def food_filter_printer(food, cuisine_style=None, high_cal=None, cost=None, vegetarian=None, favorite=None, disliked=None):
     filtered_food = []
     if cuisine_style:
         for item in food:
             if item["cuisine_style"] in cuisine_style:
                 filtered_food.append(item)
-                food = filtered_food
     elif high_cal:
         for item in food:
-            if item["high_cal"] in high_cal:
+            if item["high_cal"] in (high_cal, "m"):
                 filtered_food.append(item)
-                food = filtered_food
     elif cost:
         for item in food:
-            if item["cost"] in cost:
+            if item["cost"] in (cost,"m"):
                 filtered_food.append(item)
-                food = filtered_food
     elif vegetarian:
         for item in food:
-            if item["vegetarian"] in vegetarian:
+            if item["vegetarian"] in (vegetarian,"m"):
                 filtered_food.append(item)
-                food = filtered_food
-    print("All food in the list:")
-    for item in food:
-        print(item["number"], item["name"])
-    return food     
+    elif favorite:
+        for item in food:
+            if item["favorite"] in favorite:
+                filtered_food.append(item)
+    elif disliked:
+        for item in food:
+            if item["disliked"] in disliked:
+                filtered_food.append(item)
+    if filtered_food:
+        print("Food that match the criteria:")
+        for i, item in enumerate(filtered_food):
+            print(i+1, item["name"])
+        food = filtered_food
+        return food
+    else:
+        print("All food in the list:")
+        for i, item in enumerate(food):
+            print(i+1, item["name"])
+        return food     
 
+#delete a food entry from food_list.csv
 def food_eraser():
-    food = food_reader()
+    food = food_filter_printer(food_reader())
     delete_number = input("Enter the number of the food you want to delete: ")
     #create an updated list
     updated_food = []
@@ -193,8 +233,9 @@ def food_eraser():
         for nf in food:
             writer.writerow({"name": nf["name"], "cuisine_style": nf["cuisine_style"], "high_cal": nf["high_cal"], "cost": nf["cost"], "vegetarian": nf["vegetarian"], "note": nf["note"]})
 
+#set a food entry as favorite in food_list.csv
 def set_favorite_food():
-    food = food_reader()
+    food = food_filter_printer(food_reader())
     favorite_number = int(input("Enter food number that you would like to mark as your favorite: "))
     for item in food:
         if item["number"] == favorite_number:
@@ -207,8 +248,9 @@ def set_favorite_food():
         for nf in food:
             writer.writerow({"name": nf["name"], "cuisine_style": nf["cuisine_style"], "high_cal": nf["high_cal"], "cost": nf["cost"], "vegetarian": nf["vegetarian"], "note": nf["note"], "favorite": nf["favorite"], "disliked": nf["disliked"]})
 
+#set a food entry as disliked in food_list.csv
 def set_disliked_food():
-    food = food_reader()
+    food = food_filter_printer(food_reader())
     disliked_number = int(input("Enter food number that you don't like: "))
     for item in food:
         if item["number"] == disliked_number:
@@ -221,4 +263,5 @@ def set_disliked_food():
         for nf in food:
             writer.writerow({"name": nf["name"], "cuisine_style": nf["cuisine_style"], "high_cal": nf["high_cal"], "cost": nf["cost"], "vegetarian": nf["vegetarian"], "note": nf["note"], "favorite": nf["favorite"], "disliked": nf["disliked"]})
 
-main()
+if __name__ == "__main__":
+    main()
