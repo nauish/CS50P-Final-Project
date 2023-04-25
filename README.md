@@ -17,4 +17,4 @@ I have always had troubles when it comes to figuring out what to eat with my fri
 Just run the download project.py and food_list.csv and place them in the same folder and run it. You can then add, remove food from the, and use the features to find the food you want to eat. Bon appetit!
 
 ### Thank you:
-I would like to express my sincere gratitude to Sophy, Elcent, Tim, Tom, and everyone who has encouraged me to learn programming. I wouldn't have thought of this idea if we hadn't gone through great troubles figuring out what to eat. Thank you! 
+I would like to express my sincere gratitude to Sophy, Elcent, Tim, Tom, Seb and everyone who has encouraged me to learn programming. I wouldn't have thought of this idea if we hadn't gone through great troubles figuring out what to eat. Thank you! 
