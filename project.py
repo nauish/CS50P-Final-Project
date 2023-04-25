@@ -78,7 +78,7 @@ def main():
         elif option == options[2]:
             food_filter_menu()
         elif option == options[3]:
-            food_reader()
+            food_filter_printer(food_reader)
         elif option == options[4]:
             food_writer()
         elif option == options[5]:
@@ -153,12 +153,71 @@ def food_filter_menu():
         elif filter == filter_list[5]:
             random_food("","","","","","y")
 
+#reads from food_list.csv and puts in in memory
+def food_reader():
+    food_list = []
+    i = 1
+    with open("food_list.csv", "r") as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            food_list.append({"number":i,"name": row["name"], "cuisine_style": row["cuisine_style"], "high_cal": row["high_cal"], "cost": row["cost"],"vegetarian": row["vegetarian"], "note": row["note"], "favorite": row["favorite"], "disliked": row["disliked"]})
+            i += 1
+    return food_list
+
+#reads from designated list and filtered by specific category and print out food list
+def food_filter_printer(food, cuisine_style=None, high_cal=None, cost=None, vegetarian=None, favorite=None, disliked=None):
+    unfiltered_food_list = food_reader()
+    if cuisine_style is None and high_cal is None and cost is None and vegetarian is None and favorite is None and disliked is None:
+        print("All food in the list:")
+        for item in unfiltered_food_list:
+            print(item["number"], item["name"])
+        return unfiltered_food_list
+    else:
+        filtered_food_list = []
+        if cuisine_style:
+            for item in food:
+                if item["cuisine_style"] in cuisine_style:
+                    filtered_food_list.append(item)
+        elif high_cal:
+            for item in food:
+                if item["high_cal"] in (high_cal, "m"):
+                    filtered_food_list.append(item)
+        elif cost:
+            for item in food:
+                if item["cost"] in (cost,"m"):
+                    filtered_food_list.append(item)
+        elif vegetarian:
+            for item in food:
+                if item["vegetarian"] in (vegetarian,"m"):
+                    filtered_food_list.append(item)
+        elif favorite:
+            for item in food:
+                if item["favorite"] in favorite:
+                    filtered_food_list.append(item)
+        elif disliked:
+            for item in food:
+                if item["disliked"] in disliked:
+                    filtered_food_list.append(item)
+        #if no food is added to the filtered_food_list
+        if not filtered_food_list:
+            print("No food in this category. Will use the full list instead.")
+            for item in unfiltered_food_list:
+                print(item["number"], item["name"])
+            return unfiltered_food_list
+        elif filtered_food_list:
+            i = 1
+            print("Food that match the criteria:")
+            for item in filtered_food_list:
+                print(i, item["name"])
+                i += 1
+            return filtered_food_list
+
 #write user inputs to food_list.csv 
 def food_writer():
-    name = input("What's the name of the food? ")
-    while not name:
+    name = input("What's the name of the food? ").capitalize()
+    while name == "":
         print("Please enter a food name.")
-        name = input("What's the name of the food? ")
+        name = input("What's the name of the food? ").capitalize()
     cuisine_style = Question("What is the food's cuisine style? ").list_question(cuisine_style_list)
     high_cal = Question("Is this food high calorie? ([y]yes/[n]no/[m]maybe) " ).yes_no_maybe()
     cost = Question("Is it expensive? ([y]yes/[n]no/[m]maybe) ").yes_no_maybe()
@@ -169,60 +228,6 @@ def food_writer():
     with open("food_list.csv", "a") as file:
         writer = csv.DictWriter(file, fieldnames=["name", "cuisine_style", "high_cal", "cost", "vegetarian", "note", "favorite", "disliked"],)
         writer.writerow({"name": name, "cuisine_style": cuisine_style, "high_cal": high_cal, "cost": cost, "vegetarian": vegetarian, "note": note, "favorite": favorite, "disliked": disliked})
-
-#reads from food_list.csv and puts in in memory
-def food_reader():
-    foods = []
-    with open("food_list.csv", "r") as file:
-        reader = csv.DictReader(file)
-        i = 1
-        for row in reader:
-            foods.append({"number": i,"name": row["name"], "cuisine_style": row["cuisine_style"], "high_cal": row["high_cal"], "cost": row["cost"],"vegetarian": row["vegetarian"], "note": row["note"], "favorite": row["favorite"], "disliked": row["disliked"]})
-            i += 1
-    return foods
-
-#reads from designated list and filtered by specific category and print out food list
-def food_filter_printer(food, cuisine_style=None, high_cal=None, cost=None, vegetarian=None, favorite=None, disliked=None):
-    filtered_food = []
-    if cuisine_style:
-        for item in food:
-            if item["cuisine_style"] in cuisine_style:
-                filtered_food.append(item)
-    elif high_cal:
-        for item in food:
-            if item["high_cal"] in (high_cal, "m"):
-                filtered_food.append(item)
-    elif cost:
-        for item in food:
-            if item["cost"] in (cost,"m"):
-                filtered_food.append(item)
-    elif vegetarian:
-        for item in food:
-            if item["vegetarian"] in (vegetarian,"m"):
-                filtered_food.append(item)
-    elif favorite:
-        for item in food:
-            if item["favorite"] in favorite:
-                filtered_food.append(item)
-    elif disliked:
-        for item in food:
-            if item["disliked"] in disliked:
-                filtered_food.append(item)
-    if filtered_food:
-        print("Food that match the criteria:")
-        i = 1
-        for item in filtered_food:
-            print(i, item["name"])
-            i += 1
-        food = filtered_food
-        return food
-    else:
-        print("All food in the list:")
-        i = 1
-        for item in filtered_food:
-            print(i, item["name"])
-            i += 1
-        return food     
 
 #delete a food entry from food_list.csv
 def food_eraser():
@@ -236,10 +241,10 @@ def food_eraser():
             updated_food.append(f)
     food = updated_food
     with open("food_list.csv", "w", newline="") as file:
-        writer = csv.DictWriter(file, fieldnames=["name", "cuisine_style", "high_cal", "cost", "vegetarian", "note"])
+        writer = csv.DictWriter(file, fieldnames=["name", "cuisine_style", "high_cal", "cost", "vegetarian", "note", "favorite", "disliked"])
         writer.writeheader()
         for nf in food:
-            writer.writerow({"name": nf["name"], "cuisine_style": nf["cuisine_style"], "high_cal": nf["high_cal"], "cost": nf["cost"], "vegetarian": nf["vegetarian"], "note": nf["note"]})
+            writer.writerow({"name": nf["name"], "cuisine_style": nf["cuisine_style"], "high_cal": nf["high_cal"], "cost": nf["cost"], "vegetarian": nf["vegetarian"], "note": nf["note"], "favorite": nf["favorite"], "disliked": nf["disliked"]})
 
 #set a food entry as favorite in food_list.csv
 def set_favorite_food():
