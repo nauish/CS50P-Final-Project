@@ -72,7 +72,7 @@ def main():
         input("Press Enter to continue...")
         option = Question("Your selection: ").list_question(options)
         if option == options[0]:
-            random_food()
+            random_food("","","","","","n",)
         elif option == options[1]:
             food_championship()
         elif option == options[2]:
@@ -93,8 +93,8 @@ def main():
             print("Invalid input. Please press the number of the option you want to use.")
 
 def random_food(cuisine_style=None, high_cal=None, cost=None, vegetarian=None, favorite=None, disliked=None):
-    food = food_filter_printer(food_reader(), cuisine_style=cuisine_style, high_cal=high_cal, cost=cost, vegetarian=vegetarian, favorite=favorite, disliked=disliked)
-    random_food_choice= random.choice(food)
+    food_list_with_optional_filter = food_filter_printer(food_reader(), cuisine_style=cuisine_style, high_cal=high_cal, cost=cost, vegetarian=vegetarian, favorite=favorite, disliked=disliked)
+    random_food_choice= random.choice(food_list_with_optional_filter)
     print(f"How about consider eating {str.lower(random_food_choice['name'])}?!")
     return random_food_choice
 
@@ -132,7 +132,7 @@ def food_filter_menu():
         "Expensive or cheap",
         "Vegetarian or not",
         "Favorite food",
-        "Disliked food"
+        "All food plus the disliked food"
         ]
         filter=Question("What type of filter? ").list_question(filter_list)
         print(filter)
@@ -151,7 +151,7 @@ def food_filter_menu():
         elif filter == filter_list[4]:
             random_food("","","","","y")
         elif filter == filter_list[5]:
-            random_food("","","","","","y")
+            random_food("","","","","","")
 
 #reads from food_list.csv and puts in in memory
 def food_reader():
