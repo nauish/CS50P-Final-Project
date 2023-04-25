@@ -14,4 +14,7 @@ I have always had troubles when it comes to figuring out what to eat with my fri
 7. Set food in the list as favorite(or disliked) (**set_favorite_food()** and **set_disliked_food()**): This will let the user mark their favorite or disliked food. I made it so that this 2 options are mutually exclusive (i.e. if a food is marked favorite, the disliked status will automatically removed). 
 
 ### How to use:
-Just run the download project.py and food_list.csv and place them in the same folder and run it. You can then add, remove, and use the features.
+Just run the download project.py and food_list.csv and place them in the same folder and run it. You can then add, remove food from the, and use the features to find the food you want to eat. Bon appetit!
+
+### Thank you:
+I would like to express my sincere gratitude to Sophy, Elcent, Tim, Tom, and everyone who has encourage me to learn programming or has gone through great troubles with me figuring out what to eat. Thank you! 
