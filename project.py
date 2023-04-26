@@ -7,8 +7,7 @@ class Question:
     def yes_no_maybe(self):
         while True:
             answer = input(self.question)
-            acceptable_answer = ["y", "n", "m"]
-            if answer in acceptable_answer:
+            if answer in ["y", "n", "m"]:
                 return answer
             else:
                 print("Please enter a valid answer.")
@@ -16,8 +15,7 @@ class Question:
     def yes_no_question(self):
         while True:
             answer = input(self.question)
-            acceptable_answer = ["y", "n"]
-            if answer in acceptable_answer:
+            if answer in ["y", "n"]:
                 return answer
             else:
                 print("Please enter a valid answer.")
@@ -69,24 +67,30 @@ def main():
     ]
     print(welcome_msg)
     while True:
-        input("Press Enter to continue...")
         option = Question("Your selection: ").list_question(options)
         if option == options[0]:
             random_food("","","","","","n",)
         elif option == options[1]:
             food_championship()
+            input("Press Enter to continue...")
         elif option == options[2]:
             food_filter_menu()
+            input("Press Enter to continue...")
         elif option == options[3]:
             food_filter_printer(food_reader)
+            input("Press Enter to continue...")
         elif option == options[4]:
             food_writer()
+            input("Press Enter to continue...")
         elif option == options[5]:
             food_eraser()
+            input("Press Enter to continue...")
         elif option == options[6]:
             set_favorite_food()
+            input("Press Enter to continue...")
         elif option == options[7]:
             set_disliked_food()
+            input("Press Enter to continue...")
         elif option == options[8]:
             sys.exit("Have a nice day!")
         else:
@@ -109,10 +113,14 @@ def food_championship():
         print("Which food do you prefer?")
         print(f"1. {pair[0]['name']}")
         print(f"2. {pair[1]['name']}")
+        print("-----------------\n9. Back to main menu")
         while True:
             try:
                 choice = int(input("Enter your choice (1 or 2): "))
-                if choice not in [1, 2]:
+                if choice == 9:
+                    main()
+                    break
+                elif choice not in [1, 2]:
                     raise ValueError
                 break
             except ValueError:
@@ -132,7 +140,8 @@ def food_filter_menu():
         "Expensive or cheap",
         "Vegetarian or not",
         "Favorite food",
-        "All food plus the disliked food"
+        "All food plus the disliked food",
+        "Back to main menu"
         ]
         filter=Question("What type of filter? ").list_question(filter_list)
         print(filter)
@@ -152,6 +161,8 @@ def food_filter_menu():
             random_food("","","","","y")
         elif filter == filter_list[5]:
             random_food("","","","","","")
+        elif filter == filter_list[6]:
+            main()
 
 #reads from food_list.csv and puts in in memory
 def food_reader():
@@ -249,12 +260,17 @@ def food_eraser():
 #set a food entry as favorite in food_list.csv
 def set_favorite_food():
     food = food_filter_printer(food_reader())
-    favorite_number = int(input("Enter food number that you would like to mark as your favorite: "))
+    favorite_number = int(input("Enter food number that you would like to mark(or unmark) as your favorite: "))
     for item in food:
         if item["number"] == favorite_number:
-            item["favorite"] = "y"
-            if item["disliked"] == "y":
-                item["disliked"] = "n"
+            if item["favorite"] == "y":
+                item["favorite"] = "n"
+                print(f"{item['name']} is no longer set as favorite food now.")
+            else:
+                item["favorite"] = "n"
+                print(f"{item['name']} is no now set as favorite food now.")
+                if item["disliked"] == "y":
+                    item["disliked"] = "n"
     with open("food_list.csv", "w", newline="") as file:
         writer = csv.DictWriter(file, fieldnames=["name", "cuisine_style", "high_cal", "cost", "vegetarian", "note", "favorite", "disliked"])
         writer.writeheader()
@@ -264,12 +280,17 @@ def set_favorite_food():
 #set a food entry as disliked in food_list.csv
 def set_disliked_food():
     food = food_filter_printer(food_reader())
-    disliked_number = int(input("Enter food number that you don't like: "))
+    disliked_number = int(input("Enter food number that you would like to mark(or unmark) as disliked: "))
     for item in food:
         if item["number"] == disliked_number:
-            item["disliked"] = "y"
-            if item["favorite"] == "y":
-                item["favorite"] = "n"
+            if item["disliked"] == "y":
+                item["disliked"] = "n"
+                print(f"{item['name']} is no longer set as disliked food now.")
+            else:
+                item["disliked"] = "y"
+                print(f"{item['name']} is set as disliked food now.")
+                if item["favorite"] == "y":
+                    item["favorite"] = "n"
     with open("food_list.csv", "w", newline="") as file:
         writer = csv.DictWriter(file, fieldnames=["name", "cuisine_style", "high_cal", "cost", "vegetarian", "note", "favorite", "disliked"])
         writer.writeheader()
