@@ -1,3 +1,7 @@
+##What Should I eat?##
+##Created by Rick Lee
+##From Taipei, Taiwan
+
 import random, sys, csv
 
 class Question:
@@ -70,27 +74,28 @@ def main():
         option = Question("Your selection: ").list_question(options)
         if option == options[0]:
             random_food("","","","","","n",)
+            input("\nPress Enter to continue...")
         elif option == options[1]:
             food_championship()
-            input("Press Enter to continue...")
+            input("\nPress Enter to continue...")
         elif option == options[2]:
             food_filter_menu()
-            input("Press Enter to continue...")
+            input("\nPress Enter to continue...")
         elif option == options[3]:
             food_filter_printer(food_reader)
-            input("Press Enter to continue...")
+            input("\nPress Enter to continue...")
         elif option == options[4]:
             food_writer()
-            input("Press Enter to continue...")
+            input("\nPress Enter to continue...")
         elif option == options[5]:
             food_eraser()
-            input("Press Enter to continue...")
+            input("\nPress Enter to continue...")
         elif option == options[6]:
             set_favorite_food()
-            input("Press Enter to continue...")
+            input("\nPress Enter to continue...")
         elif option == options[7]:
             set_disliked_food()
-            input("Press Enter to continue...")
+            input("\nPress Enter to continue...")
         elif option == options[8]:
             sys.exit("Have a nice day!")
         else:
@@ -113,7 +118,7 @@ def food_championship():
         print("Which food do you prefer?")
         print(f"1. {pair[0]['name']}")
         print(f"2. {pair[1]['name']}")
-        print("-----------------\n9. Back to main menu")
+        print("\n9. Back to main menu")
         while True:
             try:
                 choice = int(input("Enter your choice (1 or 2): "))
@@ -223,7 +228,7 @@ def food_filter_printer(food, cuisine_style=None, high_cal=None, cost=None, vege
                 i += 1
             return filtered_food_list
 
-#write user inputs to food_list.csv 
+#write user inputs to food_list.csv
 def food_writer():
     name = input("What's the name of the food? ").capitalize()
     while name == "":
@@ -265,10 +270,10 @@ def set_favorite_food():
         if item["number"] == favorite_number:
             if item["favorite"] == "y":
                 item["favorite"] = "n"
-                print(f"{item['name']} is no longer set as favorite food now.")
+                print(f"{item['name']} is no longer set as favorite food.")
             else:
-                item["favorite"] = "n"
-                print(f"{item['name']} is no now set as favorite food now.")
+                item["favorite"] = "y"
+                print(f"{item['name']} is set as favorite food now.")
                 if item["disliked"] == "y":
                     item["disliked"] = "n"
     with open("food_list.csv", "w", newline="") as file:
@@ -285,7 +290,7 @@ def set_disliked_food():
         if item["number"] == disliked_number:
             if item["disliked"] == "y":
                 item["disliked"] = "n"
-                print(f"{item['name']} is no longer set as disliked food now.")
+                print(f"{item['name']} is no longer set as disliked food.")
             else:
                 item["disliked"] = "y"
                 print(f"{item['name']} is set as disliked food now.")
