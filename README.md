@@ -1,5 +1,5 @@
 # What should I Eat?
-## Video Demo:  <URL HERE>
+## Video Demo:  <https://youtu.be/8vjPEMGnrmM>
 ## Description:
 ### Why I designed the app:
 I have always had troubles when it comes to figuring out what to eat with my friends and coworkers, and using online tools can be too much of a hassle too since I have to type in potential options each time, and it most likely just randomly select 1. Therefore, I wanted to create a project that solves just that! This program is designed to help users decide what to eat for their next meal. It provides several potential options for the user to choose from.
